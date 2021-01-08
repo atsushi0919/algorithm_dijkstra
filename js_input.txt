@@ -1,0 +1,115 @@
+ベース
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+var input_lines = [];
+var reader = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+/* ーーーー入力ーーーー
+　
+ここに書くコードを変える
+
+　 ーーーー出力ーーーー */
+reader.on('close', () => {
+  console.log(input_lines);
+});
+
+---
+
+入力：改行型（行数指定不要。string形も同一）
+1
+2
+1
+6
+1
+
+コード
+reader.on('line', (line) => {
+  input_lines.push(line);
+});
+
+出力
+[ '1', '2', '1', '6', '1' ]
+
+---
+
+※Intで取りたい場合の入力
+reader.on('line', (line) => {
+  input_lines.push(parseInt(line));
+});
+
+出力
+[ 1, 2, 1, 6, 1 ]
+
+---
+
+入力：連続文字
+10 20 00
+
+コード
+reader.on('line', (line) => {
+  input_lines = line.split(" ")
+});
+
+出力
+[ '10', '20', '00' ]
+
+---
+
+※Intで取りたい場合の入力
+reader.on('close', () => {
+    var new_input_lines = [];
+    for(var i=0;i<input_lines.length;i++){
+        new_input_lines[i] = parseInt(input_lines[i]);
+    }
+    console.log(new_input_lines);
+});
+
+出力
+[ 10, 20, 0 ]
+
+---
+
+入力：複数行2数値
+1 2
+3 4
+5 6
+7 8
+9 0
+
+コード（Intで取得）
+reader.on('line', (line) => {
+  var nums = line.split(" ")
+  for(var i=0;i<nums.length;i++){
+      lines.push(parseInt(nums[i]));
+    }
+});
+
+出力
+[
+  1, 2, 3, 4, 5,
+  6, 7, 8, 9, 0
+]
+
+入力：行列
+1 2 3 4
+5 6 7 8
+1 1 1 1
+
+コード
+var row = 0
+reader.on('line', (line) => {
+  var column = line.split(" ")
+  var new_input_lines = []
+  for(var i=0;i<column.length;i++){
+      new_input_lines[i] = parseInt(column[i]);
+  }
+  lines.push(new_input_lines)
+});
+
+出力
+[ [ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 1, 1, 1, 1 ] ]
