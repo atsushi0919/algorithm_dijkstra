@@ -1,12 +1,17 @@
 class Board {
-  constructor(h, w, pos, cost) {
+  constructor(h, w, s_pos, g_pos, cost) {
     this.dy = [-1, 0, 1, 0];
     this.dx = [0, 1, 0, -1];
     this.d_index = ["U", "R", "D", "L"];
     this.h = h;
     this.w = w;
-    this.pos = pos;
+    this.s_pos = s_pos;
+    this.g_pos = g_pos;
     this.cost = cost;
+  }
+
+  bfs(s_pos, g_pos) {
+    console.log("bfs");
   }
 
   calcCost(directions) {
@@ -23,16 +28,18 @@ class Board {
 }
 
 function solve(lines) {
-  const pos = {y: 0, x: 0};
-  const directions = ["R", "D", "R", "U", "L"];
   let h, w;
   [h, w] = lines.shift().split(" ").map((str_val) => parseInt(str_val));
+  const s_pos = {y: 0, x: 0};
+  const g_pos = {y: h - 1, x: w - 1};
   let cost = lines.map((line) => {
     return line.split(" ").map((str_val) => parseInt(str_val));
   });
 
-  let board = new Board(h, w, pos, cost);
-  console.log(board.calcCost(directions));
+  let board = new Board(h, w, s_pos, g_pos, cost);
+  console.log(board);
+
+  console.log(s_pos == g_pos);
 }
 
 /*
@@ -49,5 +56,5 @@ reader.on('close', () => {
 });
 */
 
-const q1 = ["2 5", "0 1 2 3 4", "5 6 7 8 9"]; 
+const q1 = ["3 6", "0 0 1 0 0 0", "1 0 1 0 1 0", "0 0 0 0 1 0"]; 
 solve(q1);

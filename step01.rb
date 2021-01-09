@@ -26,9 +26,9 @@ class Board
 end
 
 def solve(input_data)
-  pos = { y: 0, x: 0 }
-  directions = ["R", "D", "R", "U", "L"]
   h, w = input_data.shift.split.map(&:to_i)
+  s_pos = { y: 0, x: 0 }
+  g_pos = { y: h - 1, x: w - 1 }
   cost = input_data.each.map { |row| row.split.map(&:to_i) }
   board = Board.new ({ h: h, w: w, pos: pos, cost: cost })
 
@@ -37,12 +37,12 @@ end
 
 # データ入力
 in1 = <<~"EOS"
-  2 5
-  0 1 2 3 4
-  5 6 7 8 9
+  3 6
+  0 0 1 0 0 0
+  1 0 1 0 1 0
+  0 0 0 0 1 0
 EOS
-# 右、下、右、上、左
-# out1 = 17
+# out1 = 12
 
 solve(in1.split("\n"))
 #solve(readlines.map(&:chomp))
