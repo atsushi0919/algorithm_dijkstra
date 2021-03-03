@@ -1,38 +1,58 @@
-# 問題0: グリッド上の移動 (paizaランク C 相当)
+# 問題1: 幅優先探索 - 迷路
 
-class Board
-  DY = [-1, 0, 1, 0]
-  DX = [0, 1, 0, -1]
-  DIRECTION = ["U", "R", "D", "L"]
+class Maze
+  VY = [-1, 0, 1, 0]
+  VX = [0, 1, 0, -1]
+  OBSTACLE = "1"
+  UNEXPLORED = "#"
 
-  def initialize(**params)
-    @h = params[:h]
-    @w = params[:w]
-    @pos = params[:pos]
-    @cost = params[:cost]
+  def initialize(params)
+    @size = params[:size]
+    @start = params[:start]
+    @goal = params[:goal]
+    @maze_data = params[:maze_data]
   end
 
-  def calc_cost(directions)
-    total_cost = 0
-    pos = @pos.dup
-    directions.each do |direction|
-      index = DIRECTION.index(direction)
-      pos[:y] += DY[index]
-      pos[:x] += DX[index]
-      total_cost += @cost[pos[:y]][pos[:x]]
+  def cost_to_goal
+    # 探索初期化 未探索:#
+    searched_data = Array.new(@size[:h]).map { Array.new(@size[:w], UNEXPLORED) }
+    queue = [@start.values]
+    cost = 0
+    #searched_data.each { |line| puts line.join }
+    while true
+      y, x = queue.shift
+      VY.zip(VX).each do |dy, dx|
+        cost += 1
+        ny = y + dy
+        nx = x + dx
+      end
     end
-    total_cost
+  end
+
+  def valid_range?(y, x)
+    (0...@size[:h]).include?(y) && (0...@size[:w]).include?(x)
+  end
+
+  def can_enter?(y, x)
+    @maze_data[y][x] != OBSTACLE
+  end
+
+  def unexplored?(y, x)
+    @maze_data[y][x] == UNEXPLORED
   end
 end
 
 def solve(input_data)
   h, w = input_data.shift.split.map(&:to_i)
-  s_pos = { y: 0, x: 0 }
-  g_pos = { y: h - 1, x: w - 1 }
-  cost = input_data.each.map { |row| row.split.map(&:to_i) }
-  board = Board.new ({ h: h, w: w, pos: pos, cost: cost })
+  maze_data = input_data.each.map { |line| line.split }
+  params = { size: { h: h, w: w },
+             start: { y: 0, x: 0 },
+             goal: { y: h - 1, x: w - 1 },
+             maze_map: maze_data }
 
-  puts board.calc_cost(directions)
+  maze = Maze.new(params)
+
+  #puts board.calc_cost(directions)
 end
 
 # データ入力
