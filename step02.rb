@@ -23,9 +23,7 @@ class Maze
     searched_data = Array.new(@size[:h]).map { Array.new(@size[:w]) }
 
     # 幅優先探索
-    while true
-      # ゴール出来なかったら-1を返す
-      return [-1, searched_data] if queue.empty?
+    while !queue.empty?
       # queue先頭から探索位置を取り出す
       y, x, cost = queue.shift
       # 探索位置が障害物なら探索済みデータに-1を代入してスキップ
@@ -48,6 +46,8 @@ class Maze
         queue << [ny, nx, cost] if valid_range?(ny, nx) && searched_data[ny][nx].nil?
       end
     end
+    # ゴール出来なかったら-1を返す
+    [-1, searched_data]
   end
 
   # 迷路内か？
@@ -86,7 +86,7 @@ in2 = <<~"EOS"
   1 1 1 0 1 0 1 1 1 1
   0 0 0 0 0 0 1 0 0 0
   0 1 1 1 1 1 1 1 1 0
-  0 0 0 0 1 0 1 0 1 0
+  0 0 0 0 1 0 1 0 0 0
   1 1 1 0 0 0 1 0 1 0
   0 0 0 0 1 0 0 0 1 0
 EOS

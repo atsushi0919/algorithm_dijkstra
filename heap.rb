@@ -86,6 +86,3 @@ class MinHeap
     min
   end
 end
-
-hp = MinHeap.new [5, 6, 8, 10, 2, 1]
-p hp
