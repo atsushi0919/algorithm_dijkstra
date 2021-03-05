@@ -82,5 +82,5 @@ class PriorityQueue
   end
 end
 
-pq = PriorityQueue.new [1, 5, 6, 4, 3, 8, 9, 0, 2, 7]
+pq = PriorityQueue.new [1, 5, 6, 3, 3, 8, 3, 0, 2, 7]
 pq.size.times { puts pq.extract }
