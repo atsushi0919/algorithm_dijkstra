@@ -5,11 +5,11 @@ class Board
   DX = [0, 1, 0, -1]
   DIRECTION = ["U", "R", "D", "L"]
 
-  def initialize(**params)
-    @h = params[:h]
-    @w = params[:w]
-    @pos = params[:pos]
-    @cost = params[:cost]
+  def initialize(h:, w:, pos:, cost:)
+    @h = h
+    @w = w
+    @pos = pos
+    @cost = cost
   end
 
   def calc_cost(directions)
@@ -30,7 +30,7 @@ def solve(input_data)
   directions = ["R", "D", "R", "U", "L"]
   h, w = input_data.shift.split.map(&:to_i)
   cost = input_data.each.map { |row| row.split.map(&:to_i) }
-  board = Board.new ({ h: h, w: w, pos: pos, cost: cost })
+  board = Board.new h: h, w: w, pos: pos, cost: cost
 
   puts board.calc_cost(directions)
 end

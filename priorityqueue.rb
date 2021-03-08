@@ -3,10 +3,9 @@ require "byebug"
 class PriorityQueue
   attr_reader :data
 
-  def initialize(array: [], key: 0)
+  def initialize(array = [])
     byebug
     @data = []
-    @key = key
     array.each { |element| insert(element) }
   end
 
@@ -58,7 +57,7 @@ class PriorityQueue
     idx = size - 1
     return if idx == 0
     parent_idx = parent_idx(idx)
-    while @data[parent_idx][@key] > @data[idx][@key]
+    while (@data[parent_idx] > @data[idx])
       swap(parent_idx, idx)
       return if parent_idx == 0
       idx = parent_idx
@@ -74,9 +73,9 @@ class PriorityQueue
       if @data[r_idx].nil?
         target_idx = l_idx
       else
-        target_idx = @data[l_idx][@key] <= @data[r_idx][@key] ? l_idx : r_idx
+        target_idx = @data[l_idx] <= @data[r_idx] ? l_idx : r_idx
       end
-      if @data[idx][@key] > @data[target_idx][@key]
+      if @data[idx] > @data[target_idx]
         swap(idx, target_idx)
         idx = target_idx
       else
@@ -85,3 +84,6 @@ class PriorityQueue
     end
   end
 end
+
+pq = PriorityQueue.new [5, 6, 3]
+pq.size.times { puts pq.extract }
