@@ -1,14 +1,14 @@
 # 問題2: ダイクストラ法 - 最短経路のコスト (paizaランク A 相当)
 
-class Maze
+class RouteMap
   VY = [-1, 0, 1, 0]
   VX = [0, 1, 0, -1]
 
-  def initialize(size:, start:, goal:, maze_data:)
+  def initialize(size:, start:, goal:, cost_data:)
     @size = size
     @start = start
     @goal = goal
-    @maze_data = maze_data.map { |line| line.map(&:to_i) }
+    @cost_data = cost_data.map { |line| line.map(&:to_i) }
   end
 
   def moving_cost(sy = @start[:y], sx = @start[:x], gy = @goal[:y], gx = @goal[:x])
@@ -16,28 +16,27 @@ class Maze
     return unless valid_range?(sy, sx) && valid_range?(gy, gx)
 
     # 探索初期化
-    cost = @maze_data[sy][sx]
+    cost = @cost_data[sy][sx]
     pqueue = PriorityQueue.new(array: [[sy, sx, cost]], key: 2)
     close = []
 
-    #
     while pqueue.size > 0
       # コストが一番小さい探索位置を取り出す
       y, x, cost = pqueue.extract
 
-      # 探索位置がゴールだったらcostを返す
+      # 取り出した位置がゴールだったらcostを返す
       return cost if y == @goal[:y] && x == @goal[:x]
 
-      # スタートから現在位置の最小コストで確定
+      # スタートから現在位置までの最小コストで確定
       close << [y, x]
 
       # 現在地の隣接4マスを調べる
       VY.zip(VX).each do |dy, dx|
         ny = y + dy
         nx = x + dx
-        # 有効範囲内かつ未探索なら探索予定に追加
+        # マップ内で未探索なら探索予定に追加
         if valid_range?(ny, nx) && !close.include?([ny, nx])
-          pqueue.insert([ny, nx, @maze_data[ny][nx] + cost])
+          pqueue.insert([ny, nx, @cost_data[ny][nx] + cost])
         end
       end
     end
@@ -45,7 +44,7 @@ class Maze
     return -1
   end
 
-  # 迷路内か？
+  # マップ内か？
   def valid_range?(y, x)
     (0...@size[:h]).include?(y) && (0...@size[:w]).include?(x)
   end
@@ -138,13 +137,13 @@ end
 
 def solve(input_data)
   h, w = input_data.shift.split.map(&:to_i)
-  maze_data = input_data.each.map { |line| line.split }
+  cost_data = input_data.each.map { |line| line.split }
   params = { size: { h: h, w: w },
              start: { y: 0, x: 0 },
              goal: { y: h - 1, x: w - 1 },
-             maze_data: maze_data }
-  maze = Maze.new(**params)
-  maze.moving_cost
+             cost_data: cost_data }
+  route_map = RouteMap.new(**params)
+  route_map.moving_cost
 end
 
 # データ入力
@@ -172,5 +171,4 @@ EOS
 
 cost = solve(in1.split("\n"))
 #cost = solve(readlines.map(&:chomp))
-
 puts cost.nil? ? "無効な入力です" : cost
