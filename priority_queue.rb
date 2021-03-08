@@ -1,11 +1,7 @@
-require "byebug"
-require "priority_queue_arr"
-
 class PriorityQueue
   attr_reader :data
 
   def initialize(array: [], key: 0)
-    byebug
     @data = []
     @key = key
     array.each { |element| insert(element) }
@@ -86,3 +82,6 @@ class PriorityQueue
     end
   end
 end
+
+#pq = PriorityQueue.new array: [0, 0, 0], key: 2
+#p pq
