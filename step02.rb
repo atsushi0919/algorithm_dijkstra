@@ -5,11 +5,11 @@ class Maze
   VX = [0, 1, 0, -1]
   OBSTACLE = "1"
 
-  def initialize(params)
-    @size = params[:size]
-    @start = params[:start]
-    @goal = params[:goal]
-    @maze_data = params[:maze_data]
+  def initialize(size:, start:, goal:, maze_data:)
+    @size = size
+    @start = start
+    @goal = goal
+    @maze_data = maze_data
   end
 
   def moving_cost(sy = @start[:y], sx = @start[:x], gy = @goal[:y], gx = @goal[:x])

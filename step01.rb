@@ -5,11 +5,11 @@ class Maze
   VX = [0, 1, 0, -1]
   OBSTACLE = "1"
 
-  def initialize(params)
-    @size = params[:size]
-    @start = params[:start]
-    @goal = params[:goal]
-    @maze_data = params[:maze_data]
+  def initialize(size:, start:, goal:, maze_data:)
+    @size = size
+    @start = start
+    @goal = goal
+    @maze_data = maze_data
   end
 
   def moving_cost(sy = @start[:y], sx = @start[:x], gy = @goal[:y], gx = @goal[:x])
@@ -47,7 +47,7 @@ class Maze
       end
     end
     # ゴール出来なかったら-1を返す
-    return [-1, searched_data]
+    [-1, searched_data]
   end
 
   # 迷路内か？
@@ -64,7 +64,7 @@ def solve(input_data)
              goal: { y: h - 1, x: w - 1 },
              maze_data: maze_data }
 
-  maze = Maze.new(params)
+  maze = Maze.new(**params)
   maze.moving_cost
 end
 
