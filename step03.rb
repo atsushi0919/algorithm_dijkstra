@@ -1,14 +1,17 @@
 # 問題3: ダイクストラ法 - 経路復元 (paizaランク A 相当)
 
-class RouteMap
+class GridMap
+  attr_reader :minimum_cost
+
   VY = [-1, 0, 1, 0]
   VX = [0, 1, 0, -1]
 
-  def initialize(size:, start:, goal:, cost_data:)
+  def initialize(size:, start:, goal:, grid_data:)
     @size = size
     @start = start
     @goal = goal
-    @cost_data = cost_data.map { |line| line.map(&:to_i) }
+    @grid_data = grid_data.map { |line| line.map(&:to_i) }
+    @minimum_cost, @shortest_route = dijkstra
   end
 
   def dijkstra(sy: @start[:y], sx: @start[:x], gy: @goal[:y], gx: @goal[:x])
@@ -16,7 +19,7 @@ class RouteMap
     return unless valid_range?(sy, sx) && valid_range?(gy, gx)
 
     # 探索初期化
-    cost = @cost_data[sy][sx]
+    cost = @grid_data[sy][sx]
     prev = nil
     pqueue = PriorityQueue.new(array: [[sy, sx, cost, prev]], key: 2)
     close = []
@@ -27,14 +30,13 @@ class RouteMap
 
       # 取り出したノードがゴール
       if y == @goal[:y] && x == @goal[:x]
-        @minimum_cost = cost
         # ゴールからスタートの経路を復元する
-        @shortest_route = [[y, x]]
+        shortest_route = [[y, x]]
         while !prev.nil?
-          @shortest_route << prev
+          shortest_route << prev
           prev = close.find { |node| node[0..1] == prev }[-1]
         end
-        return @minimum_cost, @shortest_route
+        return cost, shortest_route
       end
 
       # スタートから現在位置までを確定
@@ -46,7 +48,7 @@ class RouteMap
         nx = x + dx
         # マップ内で未探索なら探索予定に追加
         if valid_range?(ny, nx) && !close.any? { |arr| arr[0] == ny && arr[1] == nx }
-          pqueue.insert([ny, nx, @cost_data[ny][nx] + cost, [y, x]])
+          pqueue.insert([ny, nx, @grid_data[ny][nx] + cost, [y, x]])
         end
       end
     end
@@ -57,6 +59,21 @@ class RouteMap
   # マップ内か？
   def valid_range?(y, x)
     (0...@size[:h]).include?(y) && (0...@size[:w]).include?(x)
+  end
+
+  # 最短経路のルートを返す
+  def get_shortest_route
+    result = []
+    str_grid = @grid_data.map { |h| h.map { |w| w.to_s } }
+    @shortest_route.each do |y, x|
+      result << "--"
+      tmp_grid = str_grid.map(&:dup)
+      tmp_grid[y][x] = "*" << tmp_grid[y][x]
+      tmp_grid.each do |line|
+        result << line.map { |node| node.rjust(2) }.join
+      end
+    end
+    result
   end
 end
 
@@ -159,13 +176,14 @@ end
 
 def solve(input_data)
   h, w = input_data.shift.split.map(&:to_i)
-  cost_data = input_data.each.map { |line| line.split }
+  grid_data = input_data.each.map { |line| line.split }
   params = { size: { h: h, w: w },
              start: { y: 0, x: 0 },
              goal: { y: h - 1, x: w - 1 },
-             cost_data: cost_data }
-  route_map = RouteMap.new(params)
-  route_map.dijkstra
+             grid_data: grid_data }
+  grid_map = GridMap.new(params)
+  minumum_cost = grid_map.minimum_cost
+  shortest_route = grid_map.get_shortest_route.join("\n")
 end
 
 # データ入力
@@ -191,11 +209,41 @@ in2 = <<~"EOS"
   0 0 0 0 1 0 0 0 1 0
 EOS
 
-minimum_cost, shortest_route = solve(in1.split("\n"))
-#cost = solve(readlines.map(&:chomp))
-unless minimum_cost.nil?
-  p minimum_cost
-  p shortest_route
-else
-  puts "無効な入力です"
-end
+#solve(in1.split("\n"))
+#puts solve(readlines.map(&:chomp))
+
+=begin
+17
+--
+ 0 3 1 4 1 5
+ 9 2 6 5 3 5
+ 3 9 7 9 3*2
+--
+ 0 3 1 4 1 5
+ 9 2 6 5 3 5
+ 3 9 7 9*3 2
+--
+ 0 3 1 4 1 5
+ 9 2 6 5*3 5
+ 3 9 7 9 3 2
+--
+ 0 3 1 4*1 5
+ 9 2 6 5 3 5
+ 3 9 7 9 3 2
+--
+ 0 3 1*4 1 5
+ 9 2 6 5 3 5
+ 3 9 7 9 3 2
+--
+ 0 3*1 4 1 5
+ 9 2 6 5 3 5
+ 3 9 7 9 3 2
+--
+ 0*3 1 4 1 5
+ 9 2 6 5 3 5
+ 3 9 7 9 3 2
+--
+*0 3 1 4 1 5
+ 9 2 6 5 3 5
+ 3 9 7 9 3 2
+=end
