@@ -1,6 +1,6 @@
-# 問題4: 拡張ダイクストラ - コストを0にできるチケット (paizaランク A 相当)
+# 問題5: ゴールのマスが複数 (paizaランク A 相当)
+# https://paiza.jp/works/mondai/grid_dijkstra/grid_dijkstra__d5
 
-# 優先度付きキュー
 class PriorityQueue
   attr_reader :data
 
@@ -90,47 +90,46 @@ class RouteMap
   VY = [-1, 0, 1, 0]
   VX = [0, 1, 0, -1]
 
-  def initialize(size:, start:, goal:, cost_data:, ticket:)
+  def initialize(size:, cost_data:)
     @size = size
-    @start = start
-    @goal = goal
     @cost_data = cost_data
-    @ticket = ticket
   end
 
-  def moving_cost(sy = @start[:y], sx = @start[:x], gy = @goal[:y], gx = @goal[:x])
-    # 無効な引数なら nil を返す
-    return unless valid_range?(sy, sx) && valid_range?(gy, gx)
-
+  def moving_cost(sy: 0, sx: 0)
     # 探索初期化
     cost = @cost_data[sy][sx]
-    ticket = @ticket
-    pqueue = PriorityQueue.new(array: [[sy, sx, cost, ticket]], key: 2)
+    pqueue = PriorityQueue.new(array: [[sy, sx, cost]], key: 2)
     close = []
+    reaching_cost = Array.new(@size[:w])
 
     while pqueue.size > 0
       # コストが一番小さい探索位置を取り出す
-      y, x, cost, ticket = pqueue.extract
-
-      # 取り出した位置がゴールだったらcostを返す
-      return cost if y == @goal[:y] && x == @goal[:x]
+      y, x, cost = pqueue.extract
 
       # スタートから現在位置までの最小コストで確定
-      close << [y, x, ticket]
+      close << [y, x]
+
+      # reaching_cost の更新処理
+      if y == @size[:h] - 1 && reaching_cost[x].nil?
+        reaching_cost[x] = cost
+      end
+
+      # reaching_cost 計算終了
+      unless reaching_cost.include?(nil)
+        return reaching_cost
+      end
 
       # 現在地の隣接4マスを調べる
       VY.zip(VX).each do |dy, dx|
         ny = y + dy
         nx = x + dx
 
+        # マップ範囲外ならスキップ
+        next unless valid_range?(ny, nx)
+
         # マップ内で未探索なら探索予定に追加
-        if valid_range?(ny, nx)
-          if !close.include?([ny, nx, ticket])
-            pqueue.insert([ny, nx, @cost_data[ny][nx] + cost, ticket])
-          end
-          if !close.include?([ny, nx, ticket - 1]) && ticket > 0
-            pqueue.insert([ny, nx, cost, ticket - 1])
-          end
+        unless close.include?([ny, nx])
+          pqueue.insert([ny, nx, @cost_data[ny][nx] + cost])
         end
       end
     end
@@ -146,40 +145,39 @@ end
 
 def solve(input_data)
   h, w = input_data.shift.split.map(&:to_i)
-  n = input_data.pop.to_i
   cost_data = input_data.each.map do |line|
     line.split.map(&:to_i)
   end
 
   route_map = RouteMap.new(size: { h: h, w: w },
-                           start: { y: 0, x: 0 },
-                           goal: { y: h - 1, x: w - 1 },
-                           cost_data: cost_data,
-                           ticket: n)
+                           cost_data: cost_data)
 
   route_map.moving_cost
 end
 
 # データ入力
 in1 = <<~"EOS"
-  5 12
-  0 1 1 1 9 9 9 9 1 1 1 1
-  1 1 1 1 1 9 9 9 1 9 9 1
-  1 1 1 9 9 9 9 9 1 9 9 1
-  9 2 9 9 1 1 1 1 1 9 9 1
-  1 1 1 2 1 9 9 9 9 9 9 1
-  0
-EOS
-
-in2 = <<~"EOS"
-  5 12
-  0 1 1 1 9 9 9 9 1 1 1 1
-  1 1 1 1 1 9 9 9 1 9 9 1
-  1 1 1 9 9 9 9 9 1 9 9 1
-  9 2 9 9 1 1 1 1 1 9 9 1
-  1 1 1 2 1 9 9 9 9 9 9 1
-  1
+  3 6
+  0 3 1 4 1 5
+  9 2 6 5 3 5
+  3 9 7 9 3 2
 EOS
 
 puts solve(in1.split("\n"))
 #puts solve(readlines.map(&:chomp))
+
+=begin
+入力例1
+3 6
+0 3 1 4 1 5
+9 2 6 5 3 5
+3 9 7 9 3 2
+
+出力例1
+12
+14
+17
+22
+15
+17
+=end
