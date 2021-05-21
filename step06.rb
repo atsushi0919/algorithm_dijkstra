@@ -164,8 +164,6 @@ EOS
 # out1 = 27
 # 17 + (11 - 1)
 
-require "byebug"
-
 puts solve(in1.split("\n"))
 # puts solve(readlines.map(&:chomp))
 
