@@ -109,6 +109,7 @@ class RouteMap
     pqueue = PriorityQueue.new(array: [[sy, sx, cost]], key: 2)
     close = []
 
+    #byebug
     while pqueue.size > 0
       # コストが一番小さい探索位置を取り出す
       y, x, cost = pqueue.extract
@@ -124,8 +125,9 @@ class RouteMap
         ny = y + dy
         nx = x + dx
         # マップ内で未探索なら探索予定に追加
-        if valid_range?(ny, nx) && !close.include?([ny, nx])
-          pqueue.insert([ny, nx, @cost_data[ny][nx] + cost])
+        next unless valid_range?(ny, nx)
+        unless close.include?([ny, nx])
+          pqueue.insert([ny, nx, [@cost_data[ny][nx], cost].max])
         end
       end
     end
@@ -148,65 +150,17 @@ def solve(input_data)
              cost_data: cost_data }
   route_map = RouteMap.new(**params)
 
-  cost1 = route_map.moving_cost(0, 0, 0, w - 1)
-  cost2 = route_map.moving_cost(0, w - 1, h - 1, w - 1, true)
-  cost1 + cost2
+  route_map.moving_cost
 end
 
 # データ入力
 in1 = <<~"EOS"
-  4 5
-  1 5 9 5 1
-  2 9 1 2 2
-  1 9 2 9 9
-  2 2 1 1 1
+  3 6
+  0 1 1 4 1 5
+  9 2 5 3 1 5
+  3 3 3 3 1 2
 EOS
-# out1 = 27
-# 17 + (11 - 1)
-
-require "byebug"
+# out1 = 3
 
 puts solve(in1.split("\n"))
 # puts solve(readlines.map(&:chomp))
-
-=begin
-下記の問題をプログラミングしてみよう！
-グリッド状の盤面で上下左右の移動を繰り返して、プレイヤーが左上のスタートから右下のゴールまでなるべくコストが小さなマスを通って、ゴールまで移動してください。
-ゴールするまでに通るマスのコストの最大値が最小になるような経路で移動し、そのコストの最大値を出力してください。
-
-※この問題は、paiza開発日誌で詳しく解説しています
-
-▼　下記解答欄にコードを記入してみよう
-
-入力される値
-h w
-t_{0,0} t_{0,1} ... t_{0,w-1}
-t_{1,0} t_{1,1} ... t_{1,w-1}
-...
-t_{h-1,0} t_{h-1,1} ... t_{h-1,w-1}
-
-
-・1 行目には盤面の行数を表す h , 盤面の列数を表す w が与えられます。
-・続く h 行の各行では i 行目 (0 ≦ i < h) には、盤面が与えられます。
-・t_{i,j} は i 行目の j 列目のコストです。
-
-入力値最終行の末尾に改行が１つ入ります。
-文字列は標準入力から渡されます。 標準入力からの値取得方法はこちらをご確認ください
-期待する出力
-コストの最大値を 1 行で出力してください。
-
-条件
-すべてのテストケースにおいて、以下の条件をみたします。
-
-・1 ≦ h , w ≦ 20
-・0 ≦ t_{i,j} ≦ 100 (0 ≦ i < h, 0 ≦ j < w)
-
-入力例1
-3 6
-0 1 1 4 1 5
-9 2 5 3 1 5
-3 3 3 3 1 2
-
-出力例1
-3
-=end
