@@ -166,15 +166,3 @@ EOS
 
 puts solve(in1.split("\n"))
 # puts solve(readlines.map(&:chomp))
-
-=begin
-入力例1
-4 5
-1 5 9 5 1
-2 9 1 2 2
-1 9 2 9 9
-2 2 1 1 1
-
-出力例1
-27
-=end

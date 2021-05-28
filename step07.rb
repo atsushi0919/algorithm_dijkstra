@@ -109,7 +109,6 @@ class RouteMap
     pqueue = PriorityQueue.new(array: [[sy, sx, cost]], key: 2)
     close = []
 
-    #byebug
     while pqueue.size > 0
       # コストが一番小さい探索位置を取り出す
       y, x, cost = pqueue.extract
